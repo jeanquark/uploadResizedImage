@@ -1,0 +1,96 @@
+Upload resized images with PHP
+
+Have you ever wanted to integrate images on your site without having to prior manually edit them? The next few lines of code show you how.
+
+### Context
+
+Uploading images can be a time consuming task, in particular if you have to manually edit each of them to meet your application requirements in terms of size and format. There are a couple of APIs in PHP that deal with image processing, like Gmagick and ImageMagick, but none of them work natively. So what we are going to do here is to make use of some original PHP functions to resize uploaded images to a desired format, preventing any kind of distortions. 
+
+### Process
+
+Say you want to convert a 4/3 aspect ratio image to a more panoramic 16/9 aspect ratio that best fit your website need (figure below).
+To prevent any distortions, original image must be cropped but we want to make sure cropping will apply equally on our image margins (both left/right and top/bottom) so that our subject remain at the centre. 
+
+How do we do that? Well, first we need to proportionally reduce our original image to the new width OR height, whichever results in the less amount of final cropping. If final image ratio (width/height) is larger than original ratio, it means final image will be more panoramic than original and therefore we will reduce it to the given width, adjust the height accordingly before cropping the extra height. If on the contrary final ratio is less than original ratio, it means final image will be have more of a portait look and we will reduce it to the given height while adjusting for the width before cropping the extra width. So image processing will go through 3 steps:
+
+1. The original image.
+2. The intermediate image which will have the final height OR width while keeping original ratio.
+3. The final image which is a cropped version of the intermediate image with the given height AND width.
+
+In our example, going from 4/3 to 16/9 corresponds to an increase in ratio, so our new image will first be reduced to the given width. The new height can be computed as the old height divided by the proportional change in width, so that our final image keep the original proportions in place before cropping. The difference between that new height and the desired height will equal the total number of pixels to be cropped to obtain the desired format. Easy peasy, uh? Now with PHP, we will make use of the [imagecopyresampled][link1] function, and what it does basically is to copy a rectangular portion of one image to another image. So rather than performing crop on the original image, it will extract a portion of the original image and copy it to the new image (Figure 2). Note that this function take quite a few parameters, in particular we need to provide the exact position (in width and height) from where to start copy on the original image. Not a problem for the width, it will start right at the border (position 0). However, we need to compute this value for the height, taking the crop into account. So rather than starting at the corner, there will be a shift (a vertical one in this case). To compute the shift that will equally crop the original image from top and bottom is where things get interesting. We can't just compute the total crop and divide it by 2 to get the bottom shift, because we never get to produce the intermediate image. The shift has to be computed from the original image instead. So we need to take into account the proportional change in height from the original image to the intermediate image. The bottom shift can be computed as:
+$$\left(\frac{intermediateheight - newheight*(\frac{oldheight}{intermediateheigth})}{2}\right)$$
+
+$$shift = \left(\frac{(h_1 - h_2)*(\frac{h_0}{h_1})}{2}\right), where$$
+$$h_0 = old\, height$$
+$$h_1 = intermediate\, height $$
+$$h_2 = new\, height $$
+
+$$\sum_{i=0}^n i^2 = \frac{(n^2+n)(2n+1)}{6}$$
+
+$$\left(\frac{\sqrt x}{y^3}\right)$$
+
+
+```php
+$new_width = Input::get('width');
+$new_height = Input::get('height');
+$new_ratio = $new_width/$new_height;
+
+$extension = Input::file('image')->getClientOriginalExtension(); // Get image extension
+$now = new \DateTime(); // Get date and time
+$date = $now->getTimestamp(); // Convert date and time in timestamp
+$fileName = $date . '.' . $extension; // Give name to image
+$destinationPath = 'images'; // Define destination path
+$img = Input::file('image')->move($destinationPath, $fileName); // Upload image to destination path
+$new_path = $destinationPath . '/' . $fileName; // Write image path in DB
+//$post->image_path = $new_path;
+
+// Resize image
+$filename = $new_path; // Get image
+
+// Resize image to format 900px/300px
+$size = getimagesize($filename); // Get image size
+//dd($size);
+$old_width = $size[0];
+$old_height = $size[1];
+
+$old_ratio = $old_width/$old_height; // Get ratio width/height
+//dd($ratio);
+if ($old_ratio > $new_ratio) { // If ratio is greater than optimal (900px/300px)
+	$width = $old_width/($old_height/$new_height);
+	$height = $new_height;
+	$shift_x = (($width - $new_width)*($old_width/$width))/2;
+	//dd($shift_x);
+	$shift_y = 0;
+	//dd($width);
+} elseif ($old_ratio < $new_ratio) { // If ratio is less than optimal (900px/300px)
+	$width = $new_width;
+	$height = $old_height/($old_width/$new_width);
+	$shift_x = 0;
+	$shift_y = (($height - $new_height)*($old_height/$height))/2; //should be equal to 330 or 220
+	//$shift_y = ($height - $new_height)/2;
+	//dd($shift_y);
+	//dd($height);
+} else { // If ratio is already optimal (900px/300px = 3)
+	$width = $new_width;
+	$height = $new_height;
+	$shift_x = 0; // No need to crop horizontally
+	$shift_y = 0; // No need to crop vertically
+}
+
+$src = imagecreatefromstring(file_get_contents($filename));
+
+// And erase the original image
+// With crop
+$dst = imagecreatetruecolor($new_width,$new_height);
+//imagecopyresampled($dst, $src, 0, 0, $shift_x, $shift_y, $new_width, $new_height, $size[0], $size[1]);
+imagecopyresampled($dst, $src, 0, 0, $shift_x, $shift_y, $width, $height, $old_width, $old_height);
+imagedestroy($src); // Free up memory
+imagejpeg($dst, $filename, 100); // adjust format as needed
+imagedestroy($dst);
+```
+
+If you'd like to experiment a working example of this code, I've got one that I built on Laravel. So head to my [github][link2] page, download and install this [repo][link3] following the given instructions. Enjoy!
+
+[link1]: <http://www.google.com>
+[link2]: <http://www.google.com>
+[link3]: <http://www.google.com>
