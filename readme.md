@@ -1,6 +1,9 @@
 # Upload Resized Image with PHP
 
-Pick up aspect ratio when uploading images to your server. Build under [Laravel 5.2](https://laravel.com/). To view a demo, head over to [this](http://www.jmkleger.com/image) blog post. To have the process fully explained, read [this](http://wwww.jmkleger.com/upload-a-resized-image-with-php) article.
+Pick up aspect ratio when uploading images to your server. Build under 
+[Laravel 5.2](https://laravel.com/). To view a live demo, go 
+[here](http://www.jmkleger.com/image). To have the process fully 
+explained, read [this](http://wwww.jmkleger.com/upload-a-resized-image-with-php) article.
 
 ## Example
 
@@ -16,12 +19,12 @@ First clone the repo
 git clone https://github.com/jeanquark/uploadResizedImage.git
 ```
 
-Install required dependencies
+cd to the newly created folder and install required dependencies
 ```
 composer update
 ```
 
-Generate application key 
+copy .env.example file and save it as .env. Then generate application key 
 ```
 php artisan key:generate
 ```
