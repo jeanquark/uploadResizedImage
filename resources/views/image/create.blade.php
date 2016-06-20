@@ -12,24 +12,25 @@
 <body>
     <div class="container">
 
-        @if ($message = Session::get('success'))
-            <div class="alert alert-success alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                {!! $message !!}
-            </div>
-            {{ Session::forget('success') }}
-        @endif
-
-        @if ($errors->any())        
-            <div class='flash alert alert-danger alert-dismissable'> 
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>      
-                @foreach ( $errors->all() as $error )               
-                    <p>{{ $error }}</p>         
-                @endforeach     
-            </div>  
-        @endif
-
         <div class="col-md-10 col-md-offset-1">
+			
+			@if ($message = Session::get('success'))
+				<div class="alert alert-success alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+					{!! $message !!}
+				</div>
+				{{ Session::forget('success') }}
+			@endif
+
+			@if ($errors->any())        
+				<div class='flash alert alert-danger alert-dismissable'> 
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>      
+					@foreach ( $errors->all() as $error )               
+						<p>{{ $error }}</p>         
+					@endforeach     
+				</div>  
+			@endif
+		
             {!! Form::open(array('route' => 'image.store', 'method' => 'POST', 'files'=> true )) !!}
 
                 <h2>Upload an Image</h2>

@@ -1,18 +1,11 @@
 # Upload Resized Image with PHP
 
-<<<<<<< HEAD
-Pick up aspect ratio when uploading images to your server. Build under [Laravel 5.2](https://laravel.com/). To see the process fully explained, head over to [this](http://wwww.jmkleger.com/upload-a-resized-image-with-php) article.
+Pick up aspect ratio when uploading images to your server. Build under [Laravel 5.2](https://laravel.com/). To view a demo, head over to [this](http://www.jmkleger.com/image) blog post. To have the process fully explained, read [this](http://wwww.jmkleger.com/upload-a-resized-image-with-php) article.
 
 ## Example
 
 Original image and uploaded image:
-![transformation](https://github.com/jeanquark/uploadResizedImage/raw/master/public/example.png "Transformation process")
-=======
-Pick up aspect ratio when uploading images to your server. Build under [Laravel 5.2](https://laravel.com/). 
-To see the full explanation, head over to [this](http://www.jm.kleger.com/upload-a-resized-image-with-php) article.
-
-![example](https://github.com/jeanquark/uploadResizedImage/raw/master/public/example.png "Example")
->>>>>>> 2ae76ffea2a5e04836900961277a9123aa19f87e
+![transformation](https://github.com/jeanquark/uploadResizedImage/raw/master/public/example.jpg "Transformation process")
 
 ## Installation
 
@@ -25,7 +18,7 @@ git clone https://github.com/jeanquark/uploadResizedImage.git
 
 Install required dependencies
 ```
-composer install
+composer update
 ```
 
 Generate application key 
@@ -33,7 +26,7 @@ Generate application key
 php artisan key:generate
 ```
 
-Head to the homepage and click the upload image link.
+Head over to the homepage and click the upload image link.
 
 
 ## Screenshots
